@@ -100,6 +100,7 @@ local state = {
     enabled = true,
     input_enabled = true,
     showhide_enabled = false,
+    forced_timer = nil
 }
 
 
@@ -1813,6 +1814,38 @@ end
 -- Other important stuff
 --
 
+function show_forced_osc(hidetimeout)
+    -- fallback if user gives a non-number
+    hidetimeout = tonumber(hidetimeout) or user_opts.hidetimeout_orig
+
+    state.showtime = mp.get_time()
+
+    -- work even if osc is disabled
+    if (not state.osc_visible) then osc_visible(true) end
+
+    if (user_opts.fadeduration > 0) then
+        state.anitype = nil
+    end
+
+    if hidetimeout > 0 then
+        user_opts.hidetimeout = hidetimeout
+        if not state.forced_timer then
+            state.forced_timer = mp.add_timeout(hidetimeout/1000, function()
+                user_opts.hidetimeout = user_opts.hidetimeout_orig
+                hide_osc()
+            end)
+        else
+            state.forced_timer:resume()
+        end
+    elseif (user_opts.hidetimeout == -1) then
+        -- toggle off and reset hidetimeout
+        user_opts.hidetimeout = user_opts.hidetimeout_orig
+        hide_osc()
+    else
+        -- toggle on
+        user_opts.hidetimeout = hidetimeout
+    end
+end
 
 function show_osc()
     -- show when disabled can happen (e.g. mouse_move) due to async/delayed unbinding
@@ -2297,3 +2330,13 @@ end
 visibility_mode(user_opts.visibility, true)
 mp.register_script_message("osc-visibility", visibility_mode)
 mp.add_key_binding("del", function() visibility_mode("cycle") end)
+mp.register_script_message("show-osc", show_forced_osc)
+mp.add_key_binding("tab", "show-osc", function(t)
+    if t.event == "down" then
+        user_opts.hidetimeout = -1
+        show_osc()
+    elseif t.event == "up" then
+        user_opts.hidetimeout = user_opts.hidetimeout_orig
+        hide_osc()
+    end
+end, {complex=true})

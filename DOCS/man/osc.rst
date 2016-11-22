@@ -110,6 +110,7 @@ these keys. In case of collision, the function needs to be bound to a
 different key. See the `Script Commands`_ section.
 
 =============   ================================================
+tab             Shows the OSC while pressed
 del             Cycles visibility between never / auto (mouse-move) / always
 =============   ================================================
 
@@ -268,6 +269,16 @@ in ``input.conf``, or sent by other scripts.
 ``osc-message``
     Show a message on screen using the OSC. First argument is the message,
     second the duration in seconds.
+
+``osc-show``
+    Pops the OSC on demand. First argument is the timeout in milliseconds.
+    If not passed, it's the same as hidetimeout. If `-1`, it'll stay up until
+    the command is sent again. Works even if OSC is disabled.
+
+Example::
+
+    ENTER       script-message osc-show 2500
+    Shift+ENTER script-message osc-show -1
 
 ``osc-visibility``
     Controls visibility mode ``never`` / ``auto`` (on mouse move) / ``always``
