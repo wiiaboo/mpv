@@ -38,6 +38,7 @@ local user_opts = {
     timetotal = false,          -- display total time instead of remaining time?
     timems = false,             -- display timecodes with milliseconds?
     visibility = "auto",        -- only used at init to set visibility_mode(...)
+    verbosecommands = true,     -- print associated messages when running commands
 }
 
 -- read_options may modify hidetimeout, so save the original default value in
@@ -316,10 +317,10 @@ function set_track(type, next)
 
     mp.commandv("set", type, new_track_mpv)
 
-        if (new_track_osc == 0) then
-        show_message(nicetypes[type] .. " Track: none")
+    if (new_track_osc == 0) then
+        maybe_show_message(nicetypes[type] .. " Track: none")
     else
-        show_message(nicetypes[type]  .. " Track: "
+        maybe_show_message(nicetypes[type]  .. " Track: "
             .. new_track_osc .. "/" .. #tracks_osc[type]
             .. " [".. (tracks_osc[type][new_track_osc].lang or "unknown") .."] "
             .. (tracks_osc[type][new_track_osc].title or ""))
@@ -739,6 +740,12 @@ function get_chapterlist()
             (v.current and '●' or '○'), title)
     end
     return message
+end
+
+function maybe_show_message(text, duration)
+    if user_opts.verbosecommands then
+        show_message(text, duration)
+    end
 end
 
 function show_message(text, duration)
@@ -1544,7 +1551,7 @@ function osc_init()
     ne.eventresponder["mouse_btn0_up"] =
         function ()
             mp.commandv("playlist-prev", "weak")
-            show_message(get_playlist(), 3)
+            maybe_show_message(get_playlist(), 3)
         end
     ne.eventresponder["shift+mouse_btn0_up"] =
         function () show_message(get_playlist(), 3) end
@@ -1559,7 +1566,7 @@ function osc_init()
     ne.eventresponder["mouse_btn0_up"] =
         function ()
             mp.commandv("playlist-next", "weak")
-            show_message(get_playlist(), 3)
+            maybe_show_message(get_playlist(), 3)
         end
     ne.eventresponder["shift+mouse_btn0_up"] =
         function () show_message(get_playlist(), 3) end
@@ -1614,7 +1621,7 @@ function osc_init()
     ne.eventresponder["mouse_btn0_up"] =
         function ()
             mp.commandv("add", "chapter", -1)
-            show_message(get_chapterlist(), 3)
+            maybe_show_message(get_chapterlist(), 3)
         end
     ne.eventresponder["shift+mouse_btn0_up"] =
         function () show_message(get_chapterlist(), 3) end
@@ -1629,7 +1636,7 @@ function osc_init()
     ne.eventresponder["mouse_btn0_up"] =
         function ()
             mp.commandv("add", "chapter", 1)
-            show_message(get_chapterlist(), 3)
+            maybe_show_message(get_chapterlist(), 3)
         end
     ne.eventresponder["shift+mouse_btn0_up"] =
         function () show_message(get_chapterlist(), 3) end
