@@ -2359,5 +2359,13 @@ end
 visibility_mode(user_opts.visibility, true)
 mp.register_script_message("osc-visibility", visibility_mode)
 mp.add_key_binding("del", function() visibility_mode("cycle") end)
+mp.add_key_binding("tab", "pop-osc", function(t)
+    if t.event == "down" then
+        visibility_mode("always", true)
+    elseif t.event == "up" or t.event == "press" then
+        visibility_mode("auto", true)
+        show_osc()
+    end
+end, {complex=true})
 
 set_virt_mouse_area(0, 0, 0, 0, "input")

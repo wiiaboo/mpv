@@ -121,6 +121,7 @@ these keys. In case of collision, the function needs to be bound to a
 different key. See the `Script Commands`_ section.
 
 =============   ================================================
+tab             Shows OSC while pressed (side effect: will override visibility)
 del             Cycles visibility between never / auto (mouse-move) / always
 =============   ================================================
 
